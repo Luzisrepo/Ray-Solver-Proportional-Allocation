@@ -45,7 +45,7 @@ Perfect for elections, resource planning, employee distribution, or any case whe
 ## 🚀 Demo
 
 Try the **live demo**:  
-👉 [Ray Solver Live Website](https://your-username.github.io/ray-solver) *(replace with your actual link once deployed)*
+👉 [Ray Solver Live Website](https://ray-solver-proportional-allocation.vercel.app/) 
 
 Preloaded sample:  
 - **Votes**: A (34,000), B (27,000), C (16,000), D (8,000), E (4,000)  

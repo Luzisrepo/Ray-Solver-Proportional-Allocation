@@ -1,5 +1,7 @@
 # Ray Solver ⚖️
 
+<img width="1740" height="922" alt="{AEB54DD9-C11A-4AE4-92DD-A37D527D991D}" src="https://github.com/user-attachments/assets/b5f0df7c-6964-4cd4-b946-d9eb7f61dbe0" />
+
 **Ray Solver** is a modern, responsive web app for proportional allocation.  
 It lets you input votes (or any resource distribution data), then calculates allocations using two of the most widely used methods:
 

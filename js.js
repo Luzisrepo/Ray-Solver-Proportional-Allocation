@@ -1,10 +1,10 @@
-// Default color palette for parties
+
         const defaultColors = [
             '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0',
             '#4895ef', '#560bad', '#b5179e', '#f15bb5', '#00bbf9'
         ];
 
-        // Sample data for demo
+        
         const sampleData = [
             { name: 'Party A', votes: 34000, color: defaultColors[0], weight: 1 },
             { name: 'Party B', votes: 27000, color: defaultColors[1], weight: 1 },
@@ -13,7 +13,7 @@
             { name: 'Party E', votes: 4000, color: defaultColors[4], weight: 1 }
         ];
 
-        // Application state
+        
         let candidates = [];
         let totalSeats = 10;
         let allocationMethod = 'dhondt';
@@ -22,7 +22,7 @@
         let voteInputType = 'absolute';
         let currentTheme = 'light';
 
-        // DOM elements
+        
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const totalSeatsInput = document.getElementById('totalSeats');
@@ -52,26 +52,26 @@
         const printResultsButton = document.getElementById('printResults');
         const sainteLagueOptions = document.getElementById('sainteLagueOptions');
 
-        // Initialize the application
+        
         function init() {
-            // Load sample data
+            
             candidates = JSON.parse(JSON.stringify(sampleData));
             renderCandidatesTable();
             calculateAllocation();
             
-            // Set up event listeners
+            
             setupEventListeners();
             
-            // Check for reduced motion preference
+            
             checkReducedMotion();
         }
 
-        // Set up all event listeners
+        
         function setupEventListeners() {
-            // Theme toggle
+            
             themeToggle.addEventListener('click', toggleTheme);
             
-            // Configuration inputs
+            
             totalSeatsInput.addEventListener('change', updateTotalSeats);
             allocationMethodSelect.addEventListener('change', updateAllocationMethod);
             modifiedSainteLagueCheckbox.addEventListener('change', updateModifiedSainteLague);
@@ -80,19 +80,19 @@
             inputAbsoluteRadio.addEventListener('change', updateVoteInputType);
             inputPercentageRadio.addEventListener('change', updateVoteInputType);
             
-            // Candidate management
+            
             addCandidateButton.addEventListener('click', addCandidate);
             importCSVButton.addEventListener('click', importCSV);
             clearAllButton.addEventListener('click', clearAllCandidates);
             parseCSVButton.addEventListener('click', parseCSVData);
             
-            // Results actions
+            
             exportCSVButton.addEventListener('click', exportResultsCSV);
             copyResultsButton.addEventListener('click', copyResultsToClipboard);
             printResultsButton.addEventListener('click', printResults);
         }
 
-        // Toggle between light and dark themes
+        
         function toggleTheme() {
             if (currentTheme === 'light') {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -104,11 +104,11 @@
                 currentTheme = 'light';
             }
             
-            // Save theme preference
+            
             localStorage.setItem('raySolverTheme', currentTheme);
         }
 
-        // Check for reduced motion preference
+        
         function checkReducedMotion() {
             const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
             
@@ -125,7 +125,7 @@
             });
         }
 
-        // Update configuration values
+        
         function updateTotalSeats() {
             totalSeats = parseInt(totalSeatsInput.value) || 1;
             calculateAllocation();
@@ -134,7 +134,7 @@
         function updateAllocationMethod() {
             allocationMethod = allocationMethodSelect.value;
             
-            // Show/hide Sainte-Laguë options
+            
             if (allocationMethod === 'sainte-lague') {
                 sainteLagueOptions.classList.remove('hidden');
             } else {
@@ -157,7 +157,7 @@
         function updateVoteInputType() {
             voteInputType = document.querySelector('input[name="voteInput"]:checked').value;
             
-            // Convert existing votes if needed
+            
             if (candidates.length > 0) {
                 const totalVotes = candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
                 
@@ -166,8 +166,7 @@
                         candidate.votes = Math.round((candidate.votes / totalVotes) * 10000) / 100; // Round to 2 decimal places
                     });
                 } else if (voteInputType === 'absolute' && totalVotes > 100) {
-                    // If we're switching from percentage to absolute, we need to scale up
-                    // This is a simplification - in a real app, we'd handle this more carefully
+                    
                     candidates.forEach(candidate => {
                         candidate.votes = Math.round(candidate.votes * 100);
                     });
@@ -178,7 +177,6 @@
             }
         }
 
-        // Candidate management functions
         function addCandidate() {
             const newCandidate = {
                 name: `Party ${String.fromCharCode(65 + candidates.length)}`,
@@ -227,8 +225,6 @@
         }
 
         function importCSV() {
-            // This would typically open a file dialog
-            // For this example, we'll just focus on the textarea
             csvDataTextarea.focus();
         }
 
@@ -266,7 +262,6 @@
             }
         }
 
-        // Render the candidates table
         function renderCandidatesTable() {
             candidatesTableBody.innerHTML = '';
             
@@ -308,7 +303,6 @@
             });
         }
 
-        // Calculate the allocation using the selected method
         function calculateAllocation() {
             if (candidates.length === 0 || totalSeats < 1) {
                 noDataMessage.classList.remove('hidden');
@@ -319,17 +313,15 @@
             noDataMessage.classList.add('hidden');
             resultsContent.classList.remove('hidden');
             
-            // Calculate total votes
             let totalVotes = candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
             
-            // If using percentages, convert to absolute numbers for calculation
             let workingVotes;
             if (voteInputType === 'percentage') {
                 workingVotes = candidates.map(candidate => ({
                     ...candidate,
-                    absoluteVotes: (candidate.votes / 100) * 10000 // Scale to avoid floating point issues
+                    absoluteVotes: (candidate.votes / 100) * 10000 
                 }));
-                totalVotes = 10000; // Scaled total
+                totalVotes = 10000; 
             } else {
                 workingVotes = candidates.map(candidate => ({
                     ...candidate,
@@ -337,21 +329,18 @@
                 }));
             }
             
-            // Perform the allocation
             let allocationResult;
             if (allocationMethod === 'dhondt') {
                 allocationResult = calculateDHondt(workingVotes, totalSeats);
             } else {
                 allocationResult = calculateSainteLague(workingVotes, totalSeats, modifiedSainteLague);
             }
-            
-            // Update UI with results
+           
             displayResults(allocationResult, totalVotes);
         }
 
-        // D'Hondt method implementation
         function calculateDHondt(candidates, seats) {
-            // Initialize seats allocated
+            
             const result = candidates.map(candidate => ({
                 ...candidate,
                 seats: 0,
@@ -359,13 +348,11 @@
             }));
             
             const allocationSteps = [];
-            
-            // Calculate quotients and allocate seats
+           
             for (let seat = 1; seat <= seats; seat++) {
                 let maxQuotient = -1;
                 let winnerIndex = -1;
-                
-                // Calculate quotient for each candidate (votes / (seats + 1))
+              
                 for (let i = 0; i < result.length; i++) {
                     const quotient = result[i].absoluteVotes / (result[i].seats + 1);
                     result[i].quotients.push(quotient);
@@ -374,11 +361,9 @@
                         maxQuotient = quotient;
                         winnerIndex = i;
                     } else if (quotient === maxQuotient) {
-                        // Tie-breaking
                         if (tieBreakRule === 'votes' && result[i].absoluteVotes > result[winnerIndex].absoluteVotes) {
                             winnerIndex = i;
                         } else if (tieBreakRule === 'random') {
-                            // Deterministic random based on seed from candidate names
                             const randomValue = deterministicRandom(result[i].name + seat);
                             const currentRandom = deterministicRandom(result[winnerIndex].name + seat);
                             if (randomValue > currentRandom) {
@@ -387,8 +372,7 @@
                         }
                     }
                 }
-                
-                // Allocate the seat to the winner
+
                 result[winnerIndex].seats++;
                 allocationSteps.push({
                     seat,
@@ -404,9 +388,7 @@
             };
         }
 
-        // Sainte-Laguë method implementation
         function calculateSainteLague(candidates, seats, modified = false) {
-            // Initialize seats allocated
             const result = candidates.map(candidate => ({
                 ...candidate,
                 seats: 0,
@@ -416,12 +398,10 @@
             const allocationSteps = [];
             const firstDivisor = modified ? 1.4 : 1;
             
-            // Calculate quotients and allocate seats
             for (let seat = 1; seat <= seats; seat++) {
                 let maxQuotient = -1;
                 let winnerIndex = -1;
                 
-                // Calculate quotient for each candidate
                 for (let i = 0; i < result.length; i++) {
                     const divisor = result[i].seats === 0 ? firstDivisor : 2 * result[i].seats + 1;
                     const quotient = result[i].absoluteVotes / divisor;
@@ -431,11 +411,9 @@
                         maxQuotient = quotient;
                         winnerIndex = i;
                     } else if (quotient === maxQuotient) {
-                        // Tie-breaking
                         if (tieBreakRule === 'votes' && result[i].absoluteVotes > result[winnerIndex].absoluteVotes) {
                             winnerIndex = i;
                         } else if (tieBreakRule === 'random') {
-                            // Deterministic random based on seed from candidate names
                             const randomValue = deterministicRandom(result[i].name + seat);
                             const currentRandom = deterministicRandom(result[winnerIndex].name + seat);
                             if (randomValue > currentRandom) {
@@ -445,7 +423,6 @@
                     }
                 }
                 
-                // Allocate the seat to the winner
                 result[winnerIndex].seats++;
                 allocationSteps.push({
                     seat,
@@ -461,42 +438,40 @@
             };
         }
 
-        // Simple deterministic random function for tie-breaking
         function deterministicRandom(seed) {
             let hash = 0;
             for (let i = 0; i < seed.length; i++) {
                 const char = seed.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32-bit integer
+                hash = hash & hash; 
             }
-            return (hash % 10000) / 10000; // Normalize to 0-1
+            return (hash % 10000) / 10000; 
         }
 
-        // Display the allocation results
+        
         function displayResults(result, totalVotes) {
             const { candidates: resultCandidates, steps } = result;
             
-            // Update summary
+            
             totalVotesElement.textContent = formatNumber(totalVotes);
             seatsAllocatedElement.textContent = totalSeats;
             largestRemainderElement.textContent = calculateLargestRemainder(resultCandidates, totalVotes, totalSeats);
             methodUsedElement.textContent = allocationMethod === 'dhondt' ? 'D\'Hondt' : 
                                            modifiedSainteLague ? 'Modified Sainte-Laguë' : 'Sainte-Laguë';
             
-            // Create bar chart
+            
             renderBarChart(resultCandidates, totalSeats);
             
-            // Create results table
+            
             renderResultsTable(resultCandidates, totalVotes);
             
-            // Create allocation steps
+            
             renderAllocationSteps(steps);
         }
 
-        // Calculate the largest remainder (for display purposes)
+        
         function calculateLargestRemainder(candidates, totalVotes, totalSeats) {
-            // This is a simplified calculation for display purposes
-            // In a real implementation, we would calculate actual remainders
+            
             const votesPerSeat = totalVotes / totalSeats;
             let maxRemainder = 0;
             
@@ -511,11 +486,11 @@
             return (maxRemainder * votesPerSeat).toFixed(0);
         }
 
-        // Render the bar chart visualization
+        
         function renderBarChart(candidates, totalSeats) {
             barChart.innerHTML = '';
             
-            // Sort candidates by seats (descending)
+            
             const sortedCandidates = [...candidates].sort((a, b) => b.seats - a.seats);
             
             for (const candidate of sortedCandidates) {
@@ -543,18 +518,18 @@
                 barChart.appendChild(barLabel);
                 barChart.appendChild(barContainer);
                 
-                // Animate the bar width
+                
                 setTimeout(() => {
                     bar.style.width = `${percentage}%`;
                 }, 100);
             }
         }
 
-        // Render the results table
+        
         function renderResultsTable(candidates, totalVotes) {
             resultsTableBody.innerHTML = '';
             
-            // Sort candidates by seats (descending), then by votes (descending)
+            
             const sortedCandidates = [...candidates].sort((a, b) => {
                 if (b.seats !== a.seats) return b.seats - a.seats;
                 return b.absoluteVotes - a.absoluteVotes;
@@ -564,8 +539,8 @@
                 const votePercentage = (candidate.absoluteVotes / totalVotes) * 100;
                 const row = document.createElement('tr');
                 
-                // Calculate change from previous allocation (simplified - in a real app, we'd track history)
-                const change = 0; // This would normally compare with previous state
+                
+                const change = 0;
                 
                 row.innerHTML = `
                     <td>
@@ -588,7 +563,7 @@
             }
         }
 
-        // Render the allocation steps
+        
         function renderAllocationSteps(steps) {
             stepsContainer.innerHTML = '';
             
@@ -604,7 +579,7 @@
             }
         }
 
-        // Export results as CSV
+        
         function exportResultsCSV() {
             if (candidates.length === 0) return;
             
@@ -631,7 +606,7 @@
             URL.revokeObjectURL(url);
         }
 
-        // Copy results to clipboard
+        
         function copyResultsToClipboard() {
             if (candidates.length === 0) return;
             
@@ -650,17 +625,17 @@
             });
         }
 
-        // Print results
+       
         function printResults() {
             window.print();
         }
 
-        // Utility function to format numbers with commas
+        
         function formatNumber(num) {
             return num.toLocaleString();
         }
 
-        // Load saved theme preference
+        
         function loadThemePreference() {
             const savedTheme = localStorage.getItem('raySolverTheme');
             if (savedTheme) {
@@ -672,13 +647,13 @@
             }
         }
 
-        // Initialize the application when the DOM is loaded
+       
         document.addEventListener('DOMContentLoaded', () => {
             loadThemePreference();
             init();
         });
 
-        // Make functions available globally for inline event handlers
+       
         window.updateCandidate = updateCandidate;
         window.updateCandidateColor = updateCandidateColor;
         window.removeCandidate = removeCandidate;
